@@ -6,10 +6,10 @@ root_path = "/Users/bzx/Documents/git/mygame/src/"
 path_star_index = len(root_path)
 
 dirs = [
-	"/Users/bzx/Documents/git/mygame/src/my/",
+	"/Users/bzx/Documents/git/mygame/src/my/"
 ]
 
-to_file_path = "/Users/bzx/Documents/git/mygame/src/my/load/ClassPath.lua"
+to_file_path = "/Users/bzx/Documents/git/mygame/src/my/classload/ClassPath.lua"
 
 fileter_dirs = [".svn"]
 class ClassPath:
@@ -22,15 +22,16 @@ class ClassPath:
 				sub_path = os.path.join(path, sub_dir)
 				self.findFilePath(sub_path)
 		elif path.endswith(".lua"):
-			self._data = self._data + "\n[\"%s\"] = \"%s\""%(os.path.basename(path)[:-4], path[path_star_index:-4])
+			self._data = self._data + "\n    %s = \"%s\","%(os.path.basename(path)[:-4], path[path_star_index:-4])
 		pass
 
 	def initData(self):
-		self._data = "ClassPath = {"
+		self._data = "local ClassPath = {"
 		for dir_temp in dirs:
 			self.findFilePath(dir_temp)
 			pass
 		self._data = self._data + "\n}"
+		self._data = self._data + "\nreturn ClassPath"
 		pass
 
 	def isFiltered(self, dir_name):
