@@ -9,17 +9,21 @@ from xmltodict import unparse
 import pprint
 
 #destDir = "/Users/bzx/Documents/sango/FknSango/CardSango/Resources/script/ui/athena/"
-destDir = "/Users/bzx/Documents/sango/FknSango/CardSango/Resources/script/ui/purgatorychallenge/"
+#destDir = "/Users/bzx/Documents/sango/FknSango/CardSango/Resources/script/ui/purgatorychallenge/"
 #destDir = "/Users/bzx/Documents/sango/FknSango/CardSango/Resources/script/ui/moon/"
+#destDir = "/Users/bzx/Documents/sango/FknSango/CardSango/Resources/script/ui/formation/"
+destDir = "/Users/bzx/Documents/sango/FknSango/CardSango/Resources/script/ui/rechargeActive/worldGroupBuy/"
 #file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/MoonLayer.csd"
 #file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/MoonShopLayer.csd"
 #file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/MoonFightResultLayer.csd"
 #file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/BatchComprehendLayer.csd"
 #file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/MoonShopPreviewLayer.csd"
 #file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/AthenaPreviewLayer.csd"
-file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/PurgatoryRankLayer.csd"
+#file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/PurgatoryRankLayer.csd"
 #file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/PurgatoryRewardPreviewLayer.csd"
-
+#file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/FormationLayer.csd"
+#file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/WorldGroupBuyRecordLayer.csd"
+file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/WorldGroupPointRewardLayer.csd"
 
 class TOLua(object):
     _file_path = ""
@@ -184,14 +188,15 @@ class TOLua(object):
             #name
             self._body += self.appendCode(indent, "ret:setName(\"%s\")"%(name))
             #contentSize
-            content_size = data.get("Size", None)
-            if content_size is not None:
-                width = float(content_size.get("X", 0))
-                height = float(content_size.get("Y", 0))
-                size = "CCSizeMake(%s, %s)"%(width, height)
-                self._body += self.appendCode(indent, "ret:setContentSize(%s)"%(size))
-                if className == "ListViewObjectData":
-                    self._body += self.appendCode(indent, "ret:setInnerSize(%s)"%(size))
+            if (className != "SpriteObjectData" and className != "ButtonObjectData") or (className == "ButtonObjectData" and Scale9Enable == "true"):
+                content_size = data.get("Size", None)
+                if content_size is not None:
+                    width = float(content_size.get("X", 0))
+                    height = float(content_size.get("Y", 0))
+                    size = "CCSizeMake(%s, %s)"%(width, height)
+                    self._body += self.appendCode(indent, "ret:setContentSize(%s)"%(size))
+                    if className == "ListViewObjectData":
+                        self._body += self.appendCode(indent, "ret:setInnerSize(%s)"%(size))
             #innerNodeSize
             if className == "ScrollViewObjectData":
                 InnerNodeSize = data["InnerNodeSize"]
@@ -199,9 +204,9 @@ class TOLua(object):
                 height = InnerNodeSize.get("Height")
                 self._body += self.appendCode(indent, "ret:setInnerSize(CCSizeMake(%s, %s))"%(width, height))
             #tag
-            tag = data.get("Tag", None)
-            if tag is not None:
-                self._body += self.appendCode(indent, "ret:setTag(%s)"%(float(tag)))
+            # tag = data.get("Tag", None)
+            # if tag is not None:
+            #     self._body += self.appendCode(indent, "ret:setTag(%s)"%(float(tag)))
             #position
             position = data.get("Position", None)
             if position is not None:
@@ -256,9 +261,10 @@ class TOLua(object):
                 g = float(bgColor.get("G", 0))
                 b = float(bgColor.get("B", 0))
                 a = float(data.get("BackColorAlpha", 255))
-                self._body += self.appendCode(indent, "ret:setBgColor(ccc3(%s, %s, %s))"%(r, g, b))
-                if a != 255:
-                    self._body += self.appendCode(indent, "ret:setBgOpacity(%s)"%(a))
+                if a != 0:
+                    self._body += self.appendCode(indent, "ret:setBgColor(ccc3(%s, %s, %s))"%(r, g, b))
+                    if a != 255:
+                        self._body += self.appendCode(indent, "ret:setBgOpacity(%s)"%(a))
             TouchEnable = data.get("TouchEnable", None)
             if TouchEnable is not None:
                 if className != "ButtonObjectData":
