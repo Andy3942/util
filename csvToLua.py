@@ -2,11 +2,25 @@
 # coding=utf-8
 
 import codecs
+import re
 
-lua_path = "/Users/bzx/Documents/sango/skill2.lua"
-db_path = "/Users/bzx/Documents/sango/skill2.db"
-file_path = "/Users/bzx/Documents/sango/卡牌三国项目/正式策划案/导出工具表/导出CSV表/skill.csv"
+lua_path = "/Users/bzx/Documents/sango/stronghold2.lua"
+db_path = "/Users/bzx/Documents/sango/stronghold2.db"
+cfg_path = "/Users/bzx/Documents/sango/卡牌三国项目/正式策划案/导出工具表/导出XML表/stronghold.cfg"
+file_path = "/Users/bzx/Documents/sango/卡牌三国项目/正式策划案/导出工具表/导出CSV表/stronghold.csv"
 
+
+cfg_data = {}
+cfg_fp = open(cfg_path)
+cfg_lines = cfg_fp.readlines()
+for line in cfg_lines:
+	pattern = re.compile(r"[a-zA-Z0-9_=]*")
+	line = pattern.search(line).group(0)
+	if line != "":
+		line_data = line.split("=")
+		cfg_data[line_data[0]] = line_data[1]
+	pass
+print(cfg_data)
 
 fp = codecs.open(file_path, 'r', 'gbk')
 
@@ -15,7 +29,7 @@ key_line = fp.readline()
 
 lua_fp = open(lua_path, 'w')
 db_fp = open(db_path, 'w')
-lua_fp.write("module(\"skill2\", package.seeall)\n")
+lua_fp.write("module(\"stronghold2\", package.seeall)\n")
 lua_fp.write("local keys={")
 keys = key_line.split(',')
 filtered_column = {}
