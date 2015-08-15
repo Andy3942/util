@@ -6,7 +6,7 @@ import re
 import csv
 import os
 
-to_folder = "/Users/bzx/Documents/sango/db/"
+to_folder = "/Users/bzx/Documents/sango/FknSango/CardSango/Resources/db/"
 cfg_folder = "/Users/bzx/Documents/sango/卡牌三国项目/正式策划案/导出工具表/导出XML表/"
 csv_folder = "/Users/bzx/Documents/sango/卡牌三国项目/正式策划案/导出工具表/导出CSV表/"
 	
@@ -41,8 +41,12 @@ def parse(filename):
 		pass
 	#keys
 	lua_fp = open(lua_path, 'w')
-	lua_fp.write("module(\"DB_%s\", package.seeall)\n"%(filename.capitalize()))
-	lua_fp.write("local db_path = \"%s\"\n"%(db_path))
+	if filename == "skill":
+		lua_fp.write("module(\"%s\", package.seeall)\n"%(filename))
+		lua_fp.write("local db_path = \"db/%s_data.lua\"\n"%(filename))
+	else:
+		lua_fp.write("module(\"DB_%s\", package.seeall)\n"%(filename.capitalize()))
+		lua_fp.write("local db_path = \"db/DB_%s_data.lua\"\n"%(filename.capitalize()))
 	lua_fp.write("local keys={")
 
 	db_fp = open(db_path, 'w')
@@ -108,10 +112,12 @@ end
 local fp = nil
 local datas = {}
 function getDataById(id)
+	id = tonumber(id)
 	local data = datas[id]
 	if data == nil then
 		if fp == nil then
-			fp = io.open(db_path)
+			local path = CCFileUtils:sharedFileUtils():fullPathForFilename(db_path)
+			fp = io.open(path)
 		end
 		local id_data = id_datas[id]
 		if id_data == nil then
@@ -128,14 +134,8 @@ function getDataById(id)
 end
 function getArrDataByField(fieldName, fieldValue)
 	local arrData = {}
-	local fieldNo = 1
+	local fieldNo = keys[fieldName]
 	local datas = getDatas()
-	for i=1, #keys do
-		if keys[i] == fieldName then
-			fieldNo = i
-			break
-		end
-	end
 	for k, v in pairs(datas) do
 		if v[fieldNo] == fieldValue then
 			setmetatable (v, mt)
