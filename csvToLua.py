@@ -6,7 +6,7 @@ import re
 import csv
 import os
 
-to_folder = "/Users/bzx/Documents/sango/FknSango/CardSango/Resources/db/"
+to_folder = "/Users/bzx/Documents/sango/db/"
 cfg_folder = "/Users/bzx/Documents/sango/卡牌三国项目/正式策划案/导出工具表/导出XML表/"
 csv_folder = "/Users/bzx/Documents/sango/卡牌三国项目/正式策划案/导出工具表/导出CSV表/"
 	
@@ -76,7 +76,7 @@ def parse(filename):
 				data_id = None
 				fp_position = db_fp.tell()
 				db_fp.write("{")
-				for i in range(0, len(line_fields) - 1):
+				for i in range(0, len(line_fields)):
 					field = line_fields[i]
 					field_type = cfg_data.get(keys.get(i))
 					if field_type != None:
