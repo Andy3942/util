@@ -51,7 +51,7 @@ def parse(filename):
 
 	db_fp = open(db_path, 'w')
 	db_fp.write("local data = {\n")
-	csv_reader = csv.reader(codecs.open(csv_path, 'rb', "gb18030"))
+	csv_reader = csv.reader(codecs.open(csv_path, 'rb', "gbk"))
 	keys = {}
 	key_max_num = None
 	fp_position = 0
@@ -70,7 +70,7 @@ def parse(filename):
 				key = keys.get(i)
 				if key != None:
 					key_index = key_index + 1
-					lua_fp.write("[\"%s\"]=%s,"%(key, key_index))
+					lua_fp.write("[\"%s\"]=%s,\n"%(key, key_index))
 				pass
 			lua_fp.write("}\n")
 			lua_fp.write("local id_datas = {\n")
@@ -105,9 +105,10 @@ def parse(filename):
 	lua_fp.write("""
 local mt = {}
 mt.__index = function (t,key)
-	return rawget(t, keys[key])
-	-- t[key] = value
-	-- return value
+	local index = keys[key]
+	local value = rawget(t, index)
+	rawset(t, key, value)
+	return value
 end
 local fp = nil
 local datas = {}
