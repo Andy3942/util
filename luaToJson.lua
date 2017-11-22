@@ -52,6 +52,10 @@ end
 
 function parseNumberString(src_str, dest_str, split_chars, split_index)
 	if split_index > #split_chars then
+		local value = tonumber(src_str)
+		if value == nil then
+			return string.format("\"%s\",", src_str)
+		end
 		return tostring(tonumber(src_str)) .. ","
 	end
 	local split_char = split_chars[split_index]
@@ -90,14 +94,18 @@ function parseNormal( ... )
 	
 	require(args.dir .. module_name)
 
-	local save_file_path = args.dest_folder .. string.lower(datas_key) .. ".json"
+	local save_file_path = args.dest_folder .. string.lower(datas_key) .. ".db.json"
 	local fp = io.open(save_file_path, 'w')
 	fp:write("{\n")
 
 	-- keys
 	local keys_str = "\"keys\":["
 	for i = 1, #keys do
-		keys_str = keys_str .. string.format("\"%s\",", keys[i])
+		local key = keys[i]
+		if key == "info" then
+			key = "desc"
+		end
+		keys_str = keys_str .. string.format("\"%s\",", key)
 	end
 	keys_str = string.sub(keys_str, 1, #keys_str - 1) .. "],"
 	fp:write(keys_str)
@@ -123,6 +131,7 @@ function parseNormal( ... )
 			else
 				local value_type = type(value)
 				if value_type == "string" then
+					value = string.gsub(value, ".png", "")
 					value = string.gsub(value, "\n", "\\n")
 					value = string.gsub(value, "\t", "\\t")
 					local start_index, end_index = string.find(value, "[0-9|,-]*")
@@ -133,27 +142,18 @@ function parseNormal( ... )
 						dest_str = string.sub(dest_str, 1, #dest_str - 1)
 						new_value = dest_str
 					else
-						local dest_str = ""
-						local split_datas = string.split(value, '|')
-						if split_datas[#split_datas] == "" then
-							table.remove(split_datas, #split_datas)
-						end
-						if #split_datas > 1 then
-							dest_str = dest_str .. "["
-							for i = 1, #split_datas do
-								local split_data = split_datas[i]
-								local is_number = isNumber(split_data)
-								if is_number then
-									dest_str = dest_str .. string.format("%s,", split_data)
-								else
-									dest_str = dest_str .. string.format("\"%s\",", split_data)
-								end
-							end
-							dest_str = string.sub(dest_str, 1, #dest_str - 1) .. "]"
-							new_value = dest_str
+						local split_chars = nil
+						if module_name == "DB_Item_dress" or 
+							module_name == "DB_Stronghold" or 
+							module_name == "DB_Legion_copy" or
+							module_name == "DB_Item_fragment" then
+							split_chars = {',', '|'}
 						else
-							new_value = string.format("\"%s\"", value)
+							split_chars = {'|'}
 						end
+						dest_str = parseNumberString(value, "", split_chars, 1)
+						dest_str = string.sub(dest_str, 1, #dest_str - 1)
+						new_value = dest_str
 					end
 				end
 			end
@@ -167,10 +167,19 @@ function parseNormal( ... )
 	fp:close()
 end
 
+function getFieldType(key)
+	local keyIndex = nil
+	for k, v in pairs(keys) do
+		if v == key then
+		end
+	end
+end
+
 function parseCxml( ... )
-	require(args.dir .. args.file_name:sub(1, #args.file_name - 4))
-	local json_file_path = args.dest_folder .. args.file_name:sub(1, #args.file_name-3) .. "json"
-	fp = io.open(json_file_path, "w")
+	local lua_path = args.dir .. args.file_name:sub(1, #args.file_name - 4)
+	require(lua_path)
+	local json_file_path = args.dest_folder .. args.file_name:sub(1, #args.file_name-4) .. ".db.json"
+	fp = io.open(json_file_path, "w+")
 	fp:write(string.format("{\"%s\":", args.key))
 	local data = _G[args.key]
 	if args.key ~= "talk" then
@@ -243,7 +252,11 @@ function isArray(data)
 	return data[1] 
 end
 
-print(args.dir .. args.file_name)
+--print(args.dir .. args.file_name)
+local json_filename = string.gsub(args.file_name:sub(1, #args.file_name-4) .. ".db_json", "DB_", ""):lower()
+local db_key = args.file_name:sub(1, #args.file_name-4):upper():gsub("DB_", "")
+
+print("static " .. db_key ..  ":string = \"" .. json_filename .. "\"")
 
 if args.is_cxml then
 	parseCxml()

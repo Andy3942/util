@@ -8,22 +8,25 @@ from xmltodict import parse
 from xmltodict import unparse
 import pprint
 
-#destDir = "/Users/bzx/Documents/sango/FknSango/CardSango/Resources/script/ui/athena/"
+destRoot = "/Users/apple/Documents/workspace/sg/FknSango/CardSango/Resources/"
+ccsRoot = "/Users/apple/Documents/workspace/sg/cocostudio/CocosProject/cocosstudio/"
+
+#destDir = destRoot + "script/ui/athena/"
 #destDir = "/Users/bzx/Documents/sango/FknSango/CardSango/Resources/script/ui/purgatorychallenge/"
-#destDir = "/Users/bzx/Documents/sango/FknSango/CardSango/Resources/script/ui/moon/"
-#destDir = "/Users/bzx/Documents/sango/FknSango/CardSango/Resources/script/ui/formation/"
-destDir = "/Users/bzx/Documents/sango/FknSango/CardSango/Resources/script/ui/rechargeActive/worldGroupBuy/"
-#file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/MoonLayer.csd"
+#destDir = destRoot + "script/ui/moon/"
+destDir = destRoot + "script/ui/formation/"
+#destDir = "/Users/bzx/Documents/sango/FknSango/CardSango/Resources/script/ui/rechargeActive/worldGroupBuy/"
+#file_path = ccsRoot + "MoonLayer.csd"
 #file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/MoonShopLayer.csd"
 #file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/MoonFightResultLayer.csd"
 #file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/BatchComprehendLayer.csd"
 #file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/MoonShopPreviewLayer.csd"
-#file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/AthenaPreviewLayer.csd"
+#file_path = ccsRoot + "AthenaPreviewLayer.csd"
 #file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/PurgatoryRankLayer.csd"
 #file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/PurgatoryRewardPreviewLayer.csd"
-#file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/FormationLayer.csd"
+file_path = ccsRoot + "FormationLayer.csd"
 #file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/WorldGroupBuyRecordLayer.csd"
-file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/WorldGroupPointRewardLayer.csd"
+#file_path = "/Users/bzx/Documents/CocosProjects/CocosProject/cocosstudio/WorldGroupPointRewardLayer.csd"
 
 class TOLua(object):
     _file_path = ""
@@ -40,7 +43,7 @@ class TOLua(object):
         self._class_file_path = "%s%s.lua"%(destDir, self._class_name)
 
     def toCode(self):
-        data = self._data["GameProjectFile"]["Content"]["Content"]["ObjectData"]
+        data = self._data["GameFile"]["Content"]["Content"]["ObjectData"]
         className = "STLayer"
         self._text = "%s = class(\"%s\", function()\n\treturn %s:create()\nend)\n\n"%(self._class_name, self._class_name, className)
         self.nodeToCode(data, None)

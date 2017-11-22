@@ -5,10 +5,10 @@ import re
 import os
 import pprint
 print("\n\n\n\n\n\n\n\n\n\n\n")
-oldConfigPath = "/Users/bzx/Documents/sango/FknSango/CardSango/Resources/script/localized/LocalizedStrings_cn.lua"
-scriptPath = "/Users/bzx/Documents/sango/FknSango/CardSango/Resources/script/"
+oldConfigPath = "/Users/apple/Documents/workspace/sg/FknSango/CardSango/Resources/script/localized/LocalizedStrings_cn.lua"
+scriptPath = "/Users/apple/Documents/workspace/sg/FknSango/CardSango/Resources/script/"
 function = "GetLocalizeStringBy"
-filterDirs = [".svn", "localized", "db", "platform", "libs", "model", "utils", "consoleExe"]
+filterDirs = [".svn", "localized", "db", "platform", "libs", "model", "utils", "consoleExe", "test", "cheer", "rank", "vip_benefit"]
 #path = input("请输入要转换的路径：")
 key_tag = "key_"
 class Internationalization():
@@ -31,6 +31,7 @@ class Internationalization():
 		new_text = re.sub(r"print\(.*", "", new_text)
 		new_text = re.sub(r"error\(.*", "", new_text)
 		new_text = re.sub(r"Logger\.trace\(.*", "", new_text)
+		new_text = re.sub(r"printTable\(.*", "", new_text)
 
 		pattern = re.compile(r"\"[^\"]*[\u4e00-\u9fa5][^\"]*\"")
 		strs = pattern.findall(new_text)
@@ -52,6 +53,7 @@ class Internationalization():
 			if key is None:
 				key = key_tag + str(self._cur_id)
 				self._cur_id = self._cur_id + 1
+				
 				data = {"key":key, "content":content}
 				self._new_config_data.append(data)
 				self._new_config_data_map[content] = key
@@ -95,7 +97,7 @@ class Internationalization():
 			content = text[space_position + 3:]
 			self._config_data[content] = key
 			if i == len(data) - 2:
-				self._cur_id = int(key[key.find("_") + 1:]) + 1
+				self._cur_id = 10365#int(key[key.find("_") + 1:]) + 1
 		pass
 	def translateAlert(self):
 		translate = input("是否替换(y/n)：")

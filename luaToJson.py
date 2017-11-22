@@ -4,9 +4,9 @@
 import os
 import sys
 
-src_folder = "/Users/chengliang/work/svn/FknSango/CardSango/Resources/db/"
+src_folder = "/Users/apple/Documents/workspace/sg/FknSango/CardSango/Resources--/db/"
 cfg_folder = src_folder
-dest_folder = "/Users/chengliang/work/git/sanguo_html/HSango/resource/db/"
+dest_folder = "/Users/apple/Documents/workspace/git/sanguo_html/HSango/resource/db/"
 
 config_datas = {
 	"cxmlLua":{
@@ -33,10 +33,10 @@ config_datas = {
 		"dest_path":"city/",
 		"key":"GuildCity"
 	},
-	"talk.lua":{
-		"dest_path":"talk/",
-		"key":"talk"
-	}
+	# "talk.lua":{
+	# 	"dest_path":"talk/",
+	# 	"key":"talk"
+	# }
 }
 
 config_data = None
@@ -56,7 +56,7 @@ def findFilePath(path, dest_path):
 							dest_folder = '%s',
 							key = '%s',
 						}
-						\"""")%(path, sub_dir, dest_path + config_data["dest_path"], config_data["key"])
+						\"""")%(path, sub_dir, dest_folder + config_data["dest_path"] + "/", config_data["key"])
 					#print(args)
 					os.system("lua %s/luaToJson.lua %s"%(sys.path[0], args))
 				else:

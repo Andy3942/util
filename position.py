@@ -3,11 +3,12 @@
 
 import os,sys,csv,math
 import xml.etree.ElementTree as et
+from pprint import pprint
 
 isCopyright = False
 
 countyFilename = "/Users/apple/Documents/workspace/slg/三国SLG项目/系统功能/地图/county/county"
-mapFilename = "/Users/apple/Documents/workspace/git/sangoslg/SangoSLG/Resources/res/images/map/map"
+mapFilename = "/Users/apple/Documents/workspace/git/sangoslg/SangoSLG/Resources/res/images/map/map_src"
 cityFilename = "/Users/apple/Documents/workspace/slg/三国SLG项目/正式策划案/导出工具表/导出csv表/land_city.csv"
 positionFilename = "/Users/apple/Documents/workspace/git/sangoslg/SangoSLG/Resources/res/images/map/position"
 countDbFilename = "/Users/apple/Documents/workspace/slg/三国SLG项目/正式策划案/导出工具表/导出csv表/land_eparchy.csv"
@@ -44,8 +45,8 @@ if __name__ == '__main__':
 
 	def isHaveGid(x, y, distance, gids):
 		distanceTemp = math.ceil(distance)
-		for xx in range(x - distanceTemp, x + distanceTemp):
-			for yy in range(y - distanceTemp, y + distanceTemp):
+		for xx in range(x - distanceTemp, x + distanceTemp + 1):
+			for yy in range(y - distanceTemp, y + distanceTemp + 1):
 				curDistance = math.sqrt(math.pow(xx - x, 2) + math.pow(yy - y, 2))
 				if curDistance <= distance:
 					for gid in gids:
@@ -54,7 +55,7 @@ if __name__ == '__main__':
 								return True
 						else:
 							index = getTileIndex(xx, yy)
-							curGid = int(mapDatas[index])
+							curGid = int(mapDatas[index]) % 100000
 							if gid == -2:
 								if curGid >= 2001 and curGid <= 2011:
 									return True
@@ -73,26 +74,26 @@ if __name__ == '__main__':
 			text = data.text.replace('\n', '')
 			mapDatas = text.split(',')
  	# 城池表
-	cityDatas = []
-	with open(cityFilename, newline='', encoding="gbk") as csvfile:
-		spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
-		i = 0
-		for row in spamreader:
-			i = i + 1
-			if i <= 2 or row[0] == "255":
-				continue
-			x = int(row[4])
-			y = int(row[5])
-			size = int(row[8].split("|")[0])
-			index = getTileIndex(x, y)
-			cityDatas.append({"size":size, "x":x, "y":y})
-	# 城池填充
-	for cityData in cityDatas:
-		centerDistance = math.floor(cityData.get("size") * 0.5)
-		for x in range(x - centerDistance, x + centerDistance):
-			for y in range(y - centerDistance, y + centerDistance):
-				index = getTileIndex(x, y)
-				mapDatas[index] = 1000
+	# cityDatas = []
+	# with open(cityFilename, newline='', encoding="gbk") as csvfile:
+	# 	spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+	# 	i = 0
+	# 	for row in spamreader:
+	# 		i = i + 1
+	# 		if i <= 2 or row[0] == "255":
+	# 			continue
+	# 		x = int(row[4])
+	# 		y = int(row[5])
+	# 		size = int(row[8].split("|")[0])
+	# 		index = getTileIndex(x, y)
+	# 		cityDatas.append({"size":size, "x":x, "y":y})
+	# # 城池填充
+	# for cityData in cityDatas:
+	# 	centerDistance = math.floor(cityData.get("size") * 0.5)
+	# 	for x in range(x - centerDistance, x + centerDistance):
+	# 		for y in range(y - centerDistance, y + centerDistance):
+	# 			index = getTileIndex(x, y)
+	# 			mapDatas[index] = 1000
 	# 州表
 	stateDbDatas = {}
 	with open(stateDbFilename, newline='', encoding="gbk") as csvfile:
@@ -117,7 +118,6 @@ if __name__ == '__main__':
 			stateDb = stateDbDatas.get(stateId, None)
 			if stateDb != None:
 				countyDbDatas[int(row[0])] = {"born":stateDb["born"], "stateId":stateId}
-
 	# 限制
 	distributionDatas = {}
 	with open(distributionDbFilename, newline='', encoding="gbk") as csvfile:
@@ -137,7 +137,7 @@ if __name__ == '__main__':
 			key = keys[i]
 			value = values[i]
 			distributionDatas[key] = value
-
+	print(distributionDatas)
 	# 处理不能做为出生州的州郡
 	for y in range(height):
 		for x in range(width):
@@ -145,16 +145,18 @@ if __name__ == '__main__':
 			countyId = int(countyDatas[index])
 			if countyId == 97:
 				countyId = 255
+			if countyId >= 100 and countyId != 255:
+				print(x, y, countyId)
 			countyDbData = countyDbDatas[countyId]
 			if countyDbData["born"] == 0:
-				countyDatas[index] == 0
-
+				countyDatas[index] = 0
+	countyDatasTemp = {}
 	with open(positionFilename, "w") as fp:
-		for y in range(3, height - 3):
-			for x in range(3, width - 3):
+		for y in range(2, height - 2):
+			for x in range(2, width - 2):
 				base = True
-				for yy in range(y - 1, y + 1):
-					for xx in range(x - 1, x + 1):
+				for yy in range(y - 1, y + 2):
+					for xx in range(x - 1, x + 2):
 						index = getTileIndex(xx, yy)
 						countyId = int(countyDatas[index])
 						if countyId == 97:
@@ -162,13 +164,13 @@ if __name__ == '__main__':
 						mapGid = int(mapDatas[index]) % 100000
 						ret = {}
 						# 水
-						ret[1] = mapGid == 91 
+						ret[1] = mapGid == 7002
 						# 山
-						ret[2] = mapGid >= 200 and mapGid < 300
+						ret[2] = mapGid == 7001
 						# 要塞
-						ret[3] = mapGid == 399
+						ret[3] = mapGid == 1001
 						# 码头
-						ret[4] = mapGid >= 300 and mapGid <= 320
+						ret[4] = mapGid >= 4001 and mapGid <= 4005
 						# npc城池
 						ret[5] = mapGid >= 2001 and mapGid <= 2011
 						# 边界
@@ -179,10 +181,10 @@ if __name__ == '__main__':
 						ret[8] = mapGid == 1001
 						if ret[1] or ret[2] or ret[3] or ret[4] or ret[4] or ret[5] or ret[6] or ret[7] or ret[8]:
 							base = False
+						else:
 							break
 					if base == False:
 						break
-
 				# 主城周围指定等级的资源地数量要求
 				if base == True:
 					resCondition = {}
@@ -191,18 +193,23 @@ if __name__ == '__main__':
 						retTemp = data.split('|')
 						resCondition[int(retTemp[0])] = int(retTemp[1]) 
 					resCountDatas = {}
-					for yy in range(y - 2, y + 2):
-						for xx in range(x - 2, x + 2):
+					for yy in range(y - 3, y + 4):
+						for xx in range(x - 3, x + 4):
+							if xx < 0 or xx >= width or yy < 0 or yy >= height:
+								continue
+							xxDelta = xx - x
+							yyDelta = yy - y
 							xDistance = abs(xx - x)
 							yDistance = abs(yy - y)
 							distance = max(xDistance, yDistance)
-							if distance == 2:
+							if distance == 2 or distance == 3:
+								#print("xx==", xx, yy)
 								index = getTileIndex(xx, yy)
 								mapGid = int(mapDatas[index])
 								level = None
-								if mapGid == 0:
+								if mapGid == 1 or mapGid == 2:
 									level = 1
-								elif mapGid == 2 or mapGid == 8 or mapGid == 14:
+								elif mapGid == 101 or mapGid == 201 or mapGid == 301 or mapGid == 401:
 									level = 2
 								if level != None:
 									resCountDatas[level] = resCountDatas.get(level, 0)
@@ -217,16 +224,16 @@ if __name__ == '__main__':
 						pass
 				# 河流
 				if base == True:
-					base = not isHaveGid(x, y, float(distributionDatas["riverRange"]), [100])
+					base = not isHaveGid(x, y, float(distributionDatas["riverRange"]), [7002])
 				# 山
 				if base == True:
-					base = not isHaveGid(x, y, float(distributionDatas["mountainRange"]), [200, 201, 202])
+					base = not isHaveGid(x, y, float(distributionDatas["mountainRange"]), [7001])
 				# npc城池
 				if base == True:
 					base = not isHaveGid(x, y, float(distributionDatas["cityRange"]), [-2])
 				# 要塞
 				if base == True:
-					base = not isHaveGid(x, y, float(distributionDatas["fortressRange"]), [400])
+					base = not isHaveGid(x, y, float(distributionDatas["fortressRange"]), [1001])
 				# 玩家城池
 				if base == True:
 					base = not isHaveGid(x, y, float(distributionDatas["playerRange"]), [1001])
@@ -242,6 +249,8 @@ if __name__ == '__main__':
 					countyId = int(countyDatas[index])
 					countyDbData = countyDbDatas[countyId]
 					fp.write("{0},{1},{2}\n".format(countyDbData["stateId"], x, y))
+					countyDatasTemp[countyDbData["stateId"]] = True
+		print("state=", countyDatasTemp)
 				#strData += chr(self._map_data[self.getTileIndex(x, y)])
 			#strData = strData[:-1] + '\n'
 		#print(len(strData))	

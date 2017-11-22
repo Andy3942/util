@@ -13,30 +13,31 @@ if __name__ == '__main__':
 	height = 100
 	xCount = 1200
 	yCount = 1200
-	pngFilename = sys.argv[1]
-	xmlFilename = sys.argv[2]
-	img = Image.open(pngFilename).convert("RGB")
-	data = list(img.getdata())
-	imageWidth = img.size[0]
-	imageHeight = img.size[1]
+	imageWidth = 800
+	imageHeight = 400
 	scale = width * xCount / imageWidth
 	centerMat4 = mat([[width * 0.5 / scale, -height * 0.5 / scale, 0, 0], 
 		[-width * 0.5 / scale, -height * 0.5 / scale, 0, 0], 
 		[0, 0, 1, 0], 
 		[width * 0.5 * xCount / scale, height * (yCount - 0.5) / scale, 0, 1]])
+	pngFilename = sys.argv[1]
+	xmlFilename = sys.argv[2]
+	img = Image.open(pngFilename).convert("RGB")
+	data = list(img.getdata())
 	colorDatas = {}
 	gids = {}
-	with open("/Users/apple/Documents/workspace/slg/三国SLG项目/正式策划案/导出工具表/导出csv表/land_eparchy.csv", newline='', encoding="gbk") as csvfile:
-		spamreader = csv.reader(csvfile, delimiter=',', quotechar=',')
-		i = 0
-		for row in spamreader:
-			i = i + 1
-			if i <= 2 or row[0] == "255":
-				continue
-			colorStr = row[4].split("|")
-			color = (int(colorStr[0]), int(colorStr[1]), int(colorStr[2]))
-			colorDatas[color] = row[0]
-	pass
+	# with open("/Users/apple/Documents/workspace/slg/三国SLG项目/正式策划案/导出工具表/导出csv表/land_eparchy.csv", newline='', encoding="gbk") as csvfile:
+	# 	spamreader = csv.reader(csvfile, delimiter=',', quotechar=',')
+	# 	i = 0
+	# 	for row in spamreader:
+	# 		i = i + 1
+	# 		if i <= 2 or row[0] == "255":
+	# 			continue
+	# 		colorStr = row[4].split("|")
+	# 		color = (int(colorStr[0]), int(colorStr[1]), int(colorStr[2]))
+	# 		colorDatas[color] = row[0]
+	# pass
+	colorDatas[(0x10, 0x09, 0x64)] = 91
 	print(colorDatas)
 	gidStrs = []
 	for y in range(yCount):
@@ -49,7 +50,7 @@ if __name__ == '__main__':
 			colorIndex = (imageHeight - math.floor(colorPosition[1]) - 1) * imageWidth + math.floor(colorPosition[0])
 			index = y * xCount + x
 			color = data[colorIndex]
-			gid = colorDatas.get(color, 97)			
+			gid = colorDatas.get(color, 0)			
 			gidStrs.append(str(gid) + ",")
 	text = "".join(gidStrs)
 	text = text[:-1] + "\n"
@@ -57,7 +58,7 @@ if __name__ == '__main__':
 	maptree = tree.getroot()
 	layers = maptree.findall("layer")
 	for layer in layers:
-		if layer.get("name") == "块层 1":
+		if layer.get("name") == "块层 2":
 			data = layer.find("data")
 			data.text = text
 	tree.write(xmlFilename, encoding="UTF-8", xml_declaration=True)

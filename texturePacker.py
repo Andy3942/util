@@ -7,8 +7,8 @@ from xml.etree import ElementTree as ET
 from xml.dom import minidom
 import sys
 
-APP 		= r"/Users/bzx/Downloads/TexturePacker.app/Contents/MacOS"
-root_path 	= r"/Users/bzx/Documents/TexturePackerTest"
+APP 		= r"/Users/apple/Downloads/TexturePacker.app/Contents/MacOS"
+root_path 	= r"/Users/apple/Documents/TexturePackerTest"
 to_path 	= "{0}/dest".format(root_path)
 src_path 	= "{0}/src".format(root_path)
 
@@ -81,6 +81,7 @@ class ParseAnimation:
 					element_dict["scaleY"] = scale_y
 					element_dict["rotationX"] = ParseAnimation.getSkewX(a, b, c, d)
 					element_dict["rotationY"] = ParseAnimation.getSkewY(a, b, c, d)
+					element_dict["rotation"] = element_dict["rotationX"]
 					color_data = frame_data.find(ns + "color/" + ns + "Color")
 					if color_data != None:
 						element_dict["alpha"] = color_data.get("alphaMultiplier", "1")
